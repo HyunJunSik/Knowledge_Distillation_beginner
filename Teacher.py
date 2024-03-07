@@ -55,7 +55,7 @@ def train(model, criterion, train_loader, optimizer):
 
     return epoch_loss, epoch_acc
 
-'''
+"""
 수정 필요
 def test(epoch, model, criterion, optimizer):
     model.eval()
