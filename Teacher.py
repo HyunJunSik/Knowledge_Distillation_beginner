@@ -7,6 +7,8 @@ from torchvision import models
 import torchvision.transforms as transforms
 import torch.optim as optim
 import torch.nn.functional as F
+import time
+import copy
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -20,8 +22,8 @@ def load_dataset():
         transforms.Normalize(mean, std)
     ])
 
-    trainset = torchvision.datasets.CIFAR100(root='./data', train=True, transform=transformation)
-    testset = torchvision.datasets.CIFAR100(root='./data', train=False, transform=transformation)
+    trainset = torchvision.datasets.CIFAR100(root='./data', train=True, download=True, transform=transformation)
+    testset = torchvision.datasets.CIFAR100(root='./data', train=False, download=True, transform=transformation)
 
     train_loader = torch.utils.data.DataLoader(trainset, batch_size=128, shuffle=True, num_workers=4)
     test_loader = torch.utils.data.DataLoader(testset, batch_size=128, shuffle=True, num_workers=4)
@@ -36,6 +38,7 @@ def train(model, criterion, train_loader, optimizer):
     total = 0
 
     for batch_idx, (inputs, labels) in enumerate(train_loader):
+        print(f"batch index : {batch_idx}")
         inputs, labels = inputs.to(device), labels.to(device)
         optimizer.zero_grad()
 
@@ -55,60 +58,27 @@ def train(model, criterion, train_loader, optimizer):
 
     return epoch_loss, epoch_acc
 
-"""
-수정 필요
-def test(epoch, model, criterion, optimizer):
+
+def test(model, criterion, test_loader):
+    
     model.eval()
     test_loss = 0
     correct = 0
     total = 0
     with torch.no_grad():
-        for batch_idx, (inputs, labels) in enumerate(testloader):
+        for batch_idx, (inputs, labels) in enumerate(test_loader):
             inputs, labels = inputs.to(device), labels.to(device)
             outputs = model(inputs)
             loss = criterion(outputs, labels)
 
-            test_loss += loss.item()*inputs.size(0)
+            test_loss += loss.item() * inputs.size(0)
             _, predicted = outputs.max(1)
             total += labels.size(0)
             correct += predicted.eq(labels).sum().item()
-        
-        epoch_loss = test_loss/total
-        epoch_acc = correct/total*100
-        print("Test | Loss:%.4f Acc: %.2f%% (%s/%s)" 
-            % (epoch_loss, epoch_acc, correct, total))
+        epoch_loss = test_loss / total
+        epoch_acc = correct / total * 100
+        print(f"Test | Loss : {epoch_loss} Acc : {epoch_acc}, {correct} / {total}")
     return epoch_loss, epoch_acc
-"""
-"""
-
-start_time = time.time()
-best_acc = 0
-epoch_length = 100
-save_loss = {"train":[],
-             "test":[]}
-save_acc = {"train":[],
-             "test":[]}
-for epoch in range(epoch_length):
-    print("Epoch %s" % epoch)
-    train_loss, train_acc = train(epoch, resnet_pt, criterion, optimizer)
-    save_loss['train'].append(train_loss)
-    save_acc['train'].append(train_acc)
-
-    test_loss, test_acc = test(epoch, resnet_pt, criterion, optimizer)
-    save_loss['test'].append(test_loss)
-    save_acc['test'].append(test_acc)
-
-    scheduler.step()
-
-    # Save model
-    if test_acc > best_acc:
-        best_acc = test_acc
-        best_model_wts = copy.deepcopy(resnet_pt.state_dict())
-    resnet_pt.load_state_dict(best_model_wts)
-
-learning_time = time.time() - start_time
-print(f'**Learning time: {learning_time // 60:.0f}m {learning_time % 60:.0f}s')
-"""
 
 
 def main():
@@ -117,12 +87,14 @@ def main():
     train_loader, test_loader = load_dataset()
     num_classes = 100
     criterion = nn.CrossEntropyLoss()
-    # scheduler는 뭐지?
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 
     # Pre-Trained ResNet load
     resnet_34 = models.resnet34(pretrained=True,)
     optimizer = optim.SGD(resnet_34.parameters(), lr=0.001, momentum=0.9)
+
+    # scheduler : CosineAnnealingLR 방법으로 lr을 자동으로 줄여나가며 T_max까지 최저점으로 줄여나가다가 다시 최대로 올림
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
+
     '''
     Fine-Tuning을 위한 2가지 작업
     1. 기존 layer의 weight 고정(freeze)
@@ -139,6 +111,30 @@ def main():
     fc_in_features = resnet_34.fc.in_features
     resnet_34.fc = nn.Linear(fc_in_features, num_classes)
     resnet_34 = resnet_34.to(device)
+    
+    start_time = time.time()
+    best_acc = 0
+    epoch_length = 150
+    save_loss = {"train" : [], "test" : []}
+    save_acc = {"train" : [], "test" : []}
+
+    for epoch in range(epoch_length):
+        print(f"epochs : {epoch + 1} / {epoch_length}")
+        train_loss, train_acc = train(resnet_34, criterion, train_loader, optimizer)
+        save_loss['train'].append(train_loss)
+        save_acc['train'].append(train_acc)
+
+        test_loss, test_acc = test(resnet_34, criterion, test_loader)
+        save_loss['test'].append(test_loss)
+        save_acc['test'].append(test_acc)
+
+        scheduler.step()
+        if test_acc > best_acc:
+            best_acc = test_acc
+            best_model_wts = copy.deepcopy(resnet_34.state_dict())
+        resnet_34.load_state_dict(best_model_wts)
+    learning_time = time.time() - start_time
+    print(f"Learning Time : {learning_time // 60:.0f}m {learning_time % 60:.0f}s")
 
 if __name__ == "__main__":
     main()
