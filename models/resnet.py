@@ -69,5 +69,17 @@ class ResNet(nn.Module):
         self.relu = nn.ReLU(inplace=True)
         
     def _make_layer(self, block, planes, blocks, stride=1):
-        
+        downsample = None
+        # 
+        if stride != 1 or self.inplanes != planes * block.expansion:
+            downsample = nn.Sequential(
+                nn.Conv2d(
+                    self.inplanes,
+                    planes * block.expansion,
+                    kernel_size=1,
+                    stride=stride,
+                    bias=False,
+                ),
+                nn.BatchNorm2d(planes * block.expansion),
+            )
         
