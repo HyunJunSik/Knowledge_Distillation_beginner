@@ -2,6 +2,10 @@ from __future__ import absolute_import
 import torch.nn as nn
 import torch.nn.functional as F
 
+'''
+This ResNet code from https://github.com/megvii-research/mdistiller/blob/master/mdistiller/models/cifar/resnet.py
+'''
+
 __all__ = ["resnet"]
 
 def conv3x3(in_planes, out_planes, stride=1):
