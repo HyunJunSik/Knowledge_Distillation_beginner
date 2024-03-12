@@ -47,7 +47,7 @@ def train(model, criterion, train_loader, optimizer):
         loss.backward()
         optimizer.step()
         # loss.item()은 loss값을 스칼라로 반환
-        train_loss += loss.item()
+        train_loss += loss.item() * inputs.size(0)
         _, predicted = outputs.max(1) # outputs.max(1)은 각 입력 샘플에 대해 가장 큰 값과 해당 인덱스 반환
         
         # predicted.eq(labels)는 예측 클래스와 실제 클래스가 동일한지에 대한 불리언 마스크 생성
@@ -55,9 +55,10 @@ def train(model, criterion, train_loader, optimizer):
         correct += predicted.eq(labels).sum().item()
         total += labels.size(0) # labels.size(0)은 현재 배치의 레이블 수 출력  
         
-    epoch_loss = train_loss / total
-    epoch_acc = correct / total * 100
-    print(f"Train | Loss : {epoch_loss} Acc : {epoch_acc}, {correct} / {total}")
+    epoch_loss = train_loss/total
+    epoch_acc = correct/total*100
+    print("Train | Loss:%.4f Acc: %.2f%% (%s/%s)"
+          %(epoch_loss, epoch_acc, correct, total))
 
     return epoch_loss, epoch_acc
 
@@ -82,7 +83,8 @@ def test(model, criterion, test_loader):
             
         epoch_loss = test_loss / total
         epoch_acc = correct / total * 100
-        print(f"Test | Loss : {epoch_loss} Acc : {epoch_acc}, {correct} / {total}")
+        print("Train | Loss:%.4f Acc: %.2f%% (%s/%s)"
+            %(epoch_loss, epoch_acc, correct, total))
     return epoch_loss, epoch_acc
 
 
@@ -91,12 +93,10 @@ def main():
     # Load Dataset
     train_loader, test_loader = load_dataset()
     num_classes = 100
-    lr, weight_decay = 1e-5, 5e-4
     criterion = nn.CrossEntropyLoss()
-
     # Pre-Trained ResNet load
-    resnet_34 = models.resnet34(pretrained=True, weights='imagenet', include_top=False, input_shape=)
-    
+    resnet_34 = models.resnet34(pretrained=True)
+    optimizer = optim.SGD(resnet_34.parameters(), lr=0.001, momentum=0.9)
 
     '''
     Fine-Tuning을 위한 2가지 작업
@@ -106,14 +106,9 @@ def main():
     이렇게 하면 기존의 weight들은 그대로 사용하고, 마지막 fc layer만 튜닝해서 최소한의 학습을 통해 모델링 가능
     pretrained=True로 하면 기본적으로 ImageNet에 학습된 Weight를 불러와주나, 최근에는 ImageNet 버전에 따라 weight를 불러와서 입력해주는 걸 권장
     '''
-    
-    # # Freezing
-    # for param in resnet_34.parameters():
-    #     param.requires_grad = False
-
-    
-    # for param in resnet_34.fc.parameters():
-    #     param.requires_grad = True
+    num_ftrs = resnet_34.fc.in_features
+    resnet_34.fc = nn.Linear(num_ftrs, num_classes)
+    resnet_34 = resnet_34.to(device)
 
     
     start_time = time.time()
