@@ -145,28 +145,28 @@ class ResNet(nn.Module):
         return out
     
 def resnet8(**kwargs):
-    return ResNet(8, [16, 16, 32, 64], "basicblock", **kwargs)
+    return ResNet(8, [16, 16, 32, 64], "basicblock", **kwargs), "resnet8"
 
 def resnet20(**kwargs):
-    return ResNet(20, [16, 16, 32, 64], "basicblock", **kwargs)
+    return ResNet(20, [16, 16, 32, 64], "basicblock", **kwargs), "resnet20"
 
 def resnet32(**kwargs):
-    return ResNet(32, [16, 16, 32, 64], "basicblock", **kwargs)
+    return ResNet(32, [16, 16, 32, 64], "basicblock", **kwargs), "resnet32"
 
 def resnet44(**kwargs):
-    return ResNet(44, [16, 16, 32, 64], "basicblock", **kwargs)
+    return ResNet(44, [16, 16, 32, 64], "basicblock", **kwargs), "resnet44"
 
 def resnet56(**kwargs):
-    return ResNet(56, [16, 16, 32, 64], "basicblock", **kwargs)
+    return ResNet(56, [16, 16, 32, 64], "basicblock", **kwargs), "resnet56"
 
 def resnet110(**kwargs):
-    return ResNet(110, [16, 16, 32, 64], "basicblock", **kwargs)
+    return ResNet(110, [16, 16, 32, 64], "basicblock", **kwargs), "resnet110"
 
 def resnet8x4(**kwargs):
-    return ResNet(8, [32, 64, 128, 256], "basicblock", **kwargs)
+    return ResNet(8, [32, 64, 128, 256], "basicblock", **kwargs), "resnet8x4"
 
 def resnet32x4(**kwargs):
-    return ResNet(32, [32, 64, 128, 256], "basicblock", **kwargs)
+    return ResNet(32, [32, 64, 128, 256], "basicblock", **kwargs), "resnet32x4"
 
 if __name__=="__main__":
     x = torch.randn(2, 3, 32, 32)
