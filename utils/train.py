@@ -152,5 +152,5 @@ if __name__ == "__main__":
     else:
         from ..models import wrn    
     
-    model, model_name = wrn.wrn_16_2(num_classes=100)
+    model, model_name = wrn.wrn_40_2(num_classes=100)
     main(model, model_name)
