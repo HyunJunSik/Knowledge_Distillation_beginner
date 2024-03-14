@@ -31,8 +31,6 @@ class BasicBlock(nn.Module):
         else:
             out = self.relu(self.bn1(x))
         out = self.relu(self.bn2(self.conv1(out if self.equalIO else x)))
-            out = self.relu(self.bn1(x))
-        out = self.relu(self.bn2(self.conv1(out if self.equalIO else x)))
         if self.droprate > 0:
             out = F.dropout(out, p=self.droprate, training=self.training)
         out = self.conv2(out)
