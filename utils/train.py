@@ -148,10 +148,9 @@ if __name__ == "__main__":
         from os import path
         print(path.dirname(path.dirname(path.abspath(__file__))))
         sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-        from models import resnet
+        from models import wrn
     else:
-        from ..models import resnet    
+        from ..models import wrn    
     
-    model, model_name = resnet.resnet32(num_classes=100)
+    model, model_name = wrn.wrn_16_2(num_classes=100)
     main(model, model_name)
-    
