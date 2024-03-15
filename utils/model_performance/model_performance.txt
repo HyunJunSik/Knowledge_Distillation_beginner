@@ -1,0 +1,7 @@
+resnet32-Test | Loss:1.2081 Acc: 67.12% (6712/10000)
+resnet32x4-Test | Loss:1.0220 Acc: 74.65% (7465/10000)
+wrn_40_2-Test | Loss:10.2511 Acc: 2.33% (233/10000)
+wrn_16_2-Test | Loss:36.4885 Acc: 1.00% (100/10000)
+resnet8-Test | Loss:1.6191 Acc: 56.68% (5668/10000)
+resnet8x4-Test | Loss:1.1218 Acc: 69.81% (6981/10000)
+shufflenetv1-Test | Loss:1.3343 Acc: 65.07% (6507/10000)

@@ -62,7 +62,13 @@ class VGG(nn.Module):
                 n = m.weight.size(1)
                 m.weight.data.normal_(0, 0.01)
                 m.bias.data.zero_()
-    
+
+def vgg11(**kwargs):
+    return VGG('VGG11', **kwargs), "vgg11"
+
+def vgg13(**kwargs):
+    return VGG('VGG13', **kwargs), "vgg13"
+
 if __name__=="__main__":
 
     net = VGG('VGG13', num_classes=10)

@@ -14,7 +14,7 @@ import logging
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 # We Should Fine-Tuning Model for Training Cifar100
-def load_dataset():
+def load_dataset(bz=64):
     train_transform = transforms.Compose(
         [
             transforms.RandomCrop(32, padding=4),
@@ -32,8 +32,8 @@ def load_dataset():
     trainset = torchvision.datasets.CIFAR100(root='./../../data', train=True, download=True, transform=train_transform)
     testset = torchvision.datasets.CIFAR100(root='./../../data', train=False, download=True, transform=test_transform)
 
-    train_loader = torch.utils.data.DataLoader(trainset, batch_size=64, shuffle=True, num_workers=2)
-    test_loader = torch.utils.data.DataLoader(testset, batch_size=64, shuffle=True, num_workers=2)
+    train_loader = torch.utils.data.DataLoader(trainset, batch_size=bz, shuffle=True, num_workers=2)
+    test_loader = torch.utils.data.DataLoader(testset, batch_size=bz, shuffle=True, num_workers=2)
 
     return train_loader, test_loader
  
@@ -89,7 +89,7 @@ def test(model, criterion, test_loader):
             
         epoch_loss = test_loss / total
         epoch_acc = correct / total * 100
-        print("Train | Loss:%.4f Acc: %.2f%% (%s/%s)"
+        print("Test | Loss:%.4f Acc: %.2f%% (%s/%s)"
             %(epoch_loss, epoch_acc, correct, total))
     return epoch_loss, epoch_acc
 
@@ -138,7 +138,7 @@ def main(model, model_name):
     learning_time = time.time() - start_time
     logging.info(f"Learning Time: {learning_time // 60:.0f}m {learning_time % 60:.0f}s")
     
-    torch.save(best_model_wts, f"best_model_weights_{model_name}.pth")
+    torch.save(best_model_wts, f"model_pth/best_model_weights_{model_name}.pth")
     print(f"Learning Time : {learning_time // 60:.0f}m {learning_time % 60:.0f}s")
     
 
@@ -148,9 +148,9 @@ if __name__ == "__main__":
         from os import path
         print(path.dirname(path.dirname(path.abspath(__file__))))
         sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-        from models import wrn, shufflenet_v1
+        from models import wrn, shufflenet_v1, vgg
     else:
-        from ..models import wrn, shufflenet_v1
+        from ..models import wrn, shufflenet_v1, vgg
     
-    model, model_name = shufflenet_v1.ShuffleV1(num_classes=100)
+    model, model_name = vgg.vgg13(num_classes=100)
     main(model, model_name)
