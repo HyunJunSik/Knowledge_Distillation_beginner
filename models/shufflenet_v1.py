@@ -80,7 +80,7 @@ class ShuffleNet(nn.Module):
             stride = 2 if i == 0 else 1
             cat_planes = self.in_planes if i == 0 else 0
             layers.append(
-                BottleNeck(self.in_planes, self.out_planes - cat_planes, stride=stride, groups=groups, is_last=(i == num_blocks - 1),)
+                BottleNeck(self.in_planes, out_planes - cat_planes, stride=stride, groups=groups, is_last=(i == num_blocks - 1),)
             )
             self.in_planes = out_planes
         return nn.Sequential(*layers)
@@ -102,7 +102,7 @@ class ShuffleNet(nn.Module):
         return out
 
 def ShuffleV1(**kwargs):
-    return ShuffleNet(out_planes=[240, 480, 960], num_blocks=[4, 8, 4], groups=3, **kwargs)
+    return ShuffleNet(out_planes=[240, 480, 960], num_blocks=[4, 8, 4], groups=3, **kwargs), "shufflenetv1"
 
 if __name__ == "__main__":
     
