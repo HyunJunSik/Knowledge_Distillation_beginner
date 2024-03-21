@@ -34,9 +34,9 @@ class Distiller(nn.Module):
         output = self.student(image)
         return output
     
-    def forward(self, image, label):
+    def forward(self, image, label, epoch=None):
         if self.training:
-            return self.forward_train(image, label)
+            return self.forward_train(image, label, epoch)
         return self.forward_test(image)
 
 class Vanilla(nn.Module):

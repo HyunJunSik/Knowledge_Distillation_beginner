@@ -14,12 +14,6 @@ def kd_loss(logits_student, logits_teacher, temperature):
 class KD(Distiller):
     '''
     Distilling the Knowledge in a Neural Network
-    KD CFG
-    CFG.KD = CN()
-    CFG.KD.TEMPERATURE = 4
-    CFG.KD.LOSS = CN()
-    CFG.KD.LOSS.CE_WEIGHT = 0.1
-    CFG.KD.LOSS.KD_WEIGHT = 0.9
     '''
 
     def __init__(self, student, teacher):
@@ -28,7 +22,7 @@ class KD(Distiller):
         self.ce_loss_weight = 0.1
         self.kd_loss_weight = 0.9
     
-    def forward_train(self, image, target):
+    def forward_train(self, image, target, epoch):
         logits_student = self.student(image)
         with torch.no_grad():
             logits_teacher = self.teacher(image)

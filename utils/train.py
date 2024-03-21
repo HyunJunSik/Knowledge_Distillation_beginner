@@ -74,8 +74,8 @@ def train(model, criterion, train_loader, optimizer):
         loss.backward()
         optimizer.step()    
         # loss.item()은 loss값을 스칼라로 반환
-        _, predicted = outputs.max(1) # outputs.max(1)은 각 입력 샘플에 대해 가장 큰 값과 해당 인덱스 반환
-        acc1, acc5 = accuracy(predicted, labels, topk=(1, 5))
+        # _, predicted = outputs.max(1) outputs.max(1)은 각 입력 샘플에 대해 가장 큰 값과 해당 인덱스 반환
+        acc1, acc5 = accuracy(outputs, labels, topk=(1, 5))
         
         total_loss += loss.item() * batch_size
         total_acc1 += acc1.item() * batch_size
@@ -100,7 +100,7 @@ def test(model, criterion, test_loader):
             inputs, labels = inputs.to(device), labels.to(device)
             outputs = model(inputs)
             loss = criterion(outputs, labels)
-            _, predicted = outputs.max(1)
+            # _, predicted = outputs.max(1)
             
             acc1, acc5 = accuracy(outputs, labels, topk=(1, 5))
             batch_size = inputs.size(0)
@@ -174,5 +174,5 @@ if __name__ == "__main__":
     else:
         from ..models import wrn, shufflenet_v1, vgg, resnet
     
-    model, model_name = resnet.resnet8(num_classes=100)
+    model, model_name = resnet.resnet8x4(num_classes=100)
     main(model, model_name)

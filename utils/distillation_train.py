@@ -72,6 +72,7 @@ class BaseTrainer(object):
     def train(self):
         epoch_length = 240
         for epoch in range(epoch_length):
+            print(f"Epoch: {epoch + 1} / {epoch_length}")
             logging.info(f"Epoch: {epoch + 1} / {epoch_length}")
             total_loss = 0
             total_acc1 = 0
@@ -89,7 +90,7 @@ class BaseTrainer(object):
                 batch_size = inputs.size(0)
                 self.optimizer.zero_grad()
                 
-                preds, losses_dict = self.distiller(inputs, labels)
+                preds, losses_dict = self.distiller(inputs, labels, epoch)
                 loss = sum([l.mean() for l in losses_dict.values()])
                 loss.backward()
                 self.optimizer.step()
@@ -124,22 +125,30 @@ if __package__ is None:
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
     from Distiller import distiller
     from Distiller.KD import KD
+    from Distiller.DKD import DKD
     from models import resnet, vgg, wrn, shufflenet_v1
     from train import load_dataset
 else:
     from ..Distiller import distiller
     from ..Distiller.KD import KD
+    from ..Distiller.DKD import DKD
     from ..models import resnet, vgg, wrn, shufflenet_v1
     from .train import load_dataset
     
-def main(selected_teacher, selected_distiller):
+def main(selected_student, selected_teacher, selected_distiller):
     
     seed = 2021
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)    
     
     train_loader, val_loader =  load_dataset()
-    model_student, student_name = resnet.resnet8(num_classes=100)
+    model_student, student_name = [
+        resnet.resnet8(num_classes=100),
+        resnet.resnet8x4(num_classes=100),
+        shufflenet_v1.ShuffleV1(num_classes=100),
+        ][selected_student]
+    
+
     model_teacher, teacher_name = [
         resnet.resnet32x4(num_classes=100), 
         resnet.resnet32(num_classes=100), 
@@ -150,10 +159,15 @@ def main(selected_teacher, selected_distiller):
     model_teacher.load_state_dict(load_teacher_param(teacher_name))
         
     distiller = [
-        KD(model_student, model_teacher)
+        KD(model_student, model_teacher),
+        DKD(model_student, model_teacher),
         ][selected_distiller]
-    distiller_name = ["KD"][selected_distiller]
+    distiller_name = [
+        "KD", 
+        "DKD",
+        ][selected_distiller]
     distiller = torch.nn.DataParallel(distiller.cuda())
+    
     print(f"Teacher Model : {teacher_name}, Student Model : {student_name}, Distiller : {distiller_name}")
     
     from datetime import datetime
@@ -187,4 +201,4 @@ def load_teacher_param(model_name):
     return model_state_dict
 
 if __name__ == "__main__":
-    main(1, 0)
+    main(selected_student=1, selected_teacher=0, selected_distiller=0)
