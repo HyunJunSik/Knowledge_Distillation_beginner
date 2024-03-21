@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import logging
 
 class Distiller(nn.Module):
     def __init__(self, student, teacher):
@@ -30,12 +31,13 @@ class Distiller(nn.Module):
         raise NotImplementedError()
     
     def forward_test(self, image):
-        return self.student(image)[0]
+        output = self.student(image)
+        return output
     
-    def forward(self, **kwargs):
+    def forward(self, image, label):
         if self.training:
-            return self.forward_train(**kwargs)
-        return self.forward_test(kwargs["images"])
+            return self.forward_train(image, label)
+        return self.forward_test(image)
 
 class Vanilla(nn.Module):
     '''

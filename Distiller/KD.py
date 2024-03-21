@@ -28,7 +28,7 @@ class KD(Distiller):
         self.ce_loss_weight = 0.1
         self.kd_loss_weight = 0.9
     
-    def forward_train(self, image, target, **kwargs):
+    def forward_train(self, image, target):
         logits_student = self.student(image)
         with torch.no_grad():
             logits_teacher = self.teacher(image)
