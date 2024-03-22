@@ -201,4 +201,4 @@ def load_teacher_param(model_name):
     return model_state_dict
 
 if __name__ == "__main__":
-    main(selected_student=1, selected_teacher=0, selected_distiller=0)
+    main(selected_student=1, selected_teacher=0, selected_distiller=1)
