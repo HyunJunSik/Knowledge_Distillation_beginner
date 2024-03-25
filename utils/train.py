@@ -3,7 +3,6 @@ import torch
 import torch.nn as nn
 import math
 import torchvision
-from torchvision import models
 import torchvision.transforms as transforms
 import torch.optim as optim
 import torch.nn.functional as F
