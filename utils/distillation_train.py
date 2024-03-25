@@ -126,12 +126,14 @@ if __package__ is None:
     from Distiller import distiller
     from Distiller.KD import KD
     from Distiller.DKD import DKD
+    from Distiller.CLKD import CLKD
     from models import resnet, vgg, wrn, shufflenet_v1
     from train import load_dataset
 else:
     from ..Distiller import distiller
     from ..Distiller.KD import KD
     from ..Distiller.DKD import DKD
+    from ..Distiller.CLKD import CLKD
     from ..models import resnet, vgg, wrn, shufflenet_v1
     from .train import load_dataset
     
@@ -161,10 +163,12 @@ def main(selected_student, selected_teacher, selected_distiller):
     distiller = [
         KD(model_student, model_teacher),
         DKD(model_student, model_teacher),
+        CLKD(model_student, model_teacher),
         ][selected_distiller]
     distiller_name = [
         "KD", 
         "DKD",
+        "CLKD",
         ][selected_distiller]
     distiller = torch.nn.DataParallel(distiller.cuda())
     
@@ -201,4 +205,4 @@ def load_teacher_param(model_name):
     return model_state_dict
 
 if __name__ == "__main__":
-    main(selected_student=1, selected_teacher=0, selected_distiller=1)
+    main(selected_student=1, selected_teacher=0, selected_distiller=2)

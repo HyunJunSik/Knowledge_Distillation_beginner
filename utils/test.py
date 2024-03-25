@@ -51,7 +51,7 @@ if __name__=="__main__":
         from ..models import wrn, shufflenet_v1, resnet, vgg
         from .train import load_dataset
     
-    model, model_name = vgg.vgg13(num_classes=100)
+    model, model_name = resnet.resnet32x4(num_classes=100)
     train_loader, test_loader = load_dataset()
     
     main(model, model_name, test_loader)

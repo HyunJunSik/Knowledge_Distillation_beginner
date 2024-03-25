@@ -174,5 +174,5 @@ if __name__ == "__main__":
     else:
         from ..models import wrn, shufflenet_v1, vgg, resnet
     
-    model, model_name = resnet.resnet8x4(num_classes=100)
+    model, model_name = wrn.wrn_16_2(num_classes=100)
     main(model, model_name)
