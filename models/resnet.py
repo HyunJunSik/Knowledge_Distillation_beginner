@@ -170,7 +170,7 @@ def resnet32x4(**kwargs):
 
 if __name__=="__main__":
     x = torch.randn(2, 3, 32, 32)
-    net = resnet8(num_classes=10)
+    net, name = resnet8(num_classes=10)
     logits = net(x)
 
     print(logits.shape)

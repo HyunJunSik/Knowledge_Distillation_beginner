@@ -3,14 +3,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import math
 
-model_urls = {
-    "vgg11": "https://download.pytorch.org/models/vgg11-bbd30ac9.pth",
-    "vgg13": "https://download.pytorch.org/models/vgg13-c768596a.pth",
-    "vgg16": "https://download.pytorch.org/models/vgg16-397923af.pth",
-    "vgg19": "https://download.pytorch.org/models/vgg19-dcbb9e9d.pth",
-}
-
 cfg = {
+    'VGG8': [64, 'M', 128, 'M', 256, 'M', 512, 'M', 512, 'M'],
     'VGG11': [64, 'M', 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M'],
     'VGG13': [64, 64, 'M', 128, 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M'],
     'VGG16': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M', 512, 512, 512, 'M', 512, 512, 512, 'M'],
@@ -62,6 +56,9 @@ class VGG(nn.Module):
                 n = m.weight.size(1)
                 m.weight.data.normal_(0, 0.01)
                 m.bias.data.zero_()
+
+def vgg8(**kwargs):
+    return VGG('VGG8', **kwargs), "vgg8"
 
 def vgg11(**kwargs):
     return VGG('VGG11', **kwargs), "vgg11"

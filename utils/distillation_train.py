@@ -127,6 +127,7 @@ if __package__ is None:
     from Distiller.KD import KD
     from Distiller.DKD import DKD
     from Distiller.CLKD import CLKD
+    from Distiller.Proposed import GCKD
     from models import resnet, vgg, wrn, shufflenet_v1
     from train import load_dataset
 else:
@@ -134,6 +135,7 @@ else:
     from ..Distiller.KD import KD
     from ..Distiller.DKD import DKD
     from ..Distiller.CLKD import CLKD
+    from ..Distiller.Proposed import GCKD
     from ..models import resnet, vgg, wrn, shufflenet_v1
     from .train import load_dataset
     
@@ -164,11 +166,13 @@ def main(selected_student, selected_teacher, selected_distiller):
         KD(model_student, model_teacher),
         DKD(model_student, model_teacher),
         CLKD(model_student, model_teacher),
+        GCKD(model_student, model_teacher),
         ][selected_distiller]
     distiller_name = [
         "KD", 
         "DKD",
         "CLKD",
+        "GCKD",
         ][selected_distiller]
     distiller = torch.nn.DataParallel(distiller.cuda())
     
@@ -195,7 +199,7 @@ def main(selected_student, selected_teacher, selected_distiller):
     learning_time = time.time() - start_time
     logging.info(f"Learning Time: {learning_time // 60:.0f}m {learning_time % 60:.0f}s")
 
-    torch.save(best_model_wts, f"model_distillation_pth/best_model_weights_{student_name}.pth")
+    torch.save(best_model_wts, f"model_distillation_pth/best_model_weights_{student_name}_{distiller_name}.pth")
     
 
 
@@ -205,4 +209,6 @@ def load_teacher_param(model_name):
     return model_state_dict
 
 if __name__ == "__main__":
-    main(selected_student=1, selected_teacher=0, selected_distiller=2)
+    main(selected_student=0, selected_teacher=1, selected_distiller=1)
+    main(selected_student=0, selected_teacher=1, selected_distiller=0)
+      
