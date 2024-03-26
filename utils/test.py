@@ -26,7 +26,7 @@ def test(model, model_name, criterion, test_loader):
         epoch_loss = test_loss / total
         epoch_acc = correct / total * 100
         with open("./model_performance/model_performance.txt", "a") as f:
-            f.write(f"{model_name}-Test | Loss:%.4f Acc: %.2f%% (%s/%s)"
+            f.write(f"{model_name}-Test | Loss:%.4f Acc: %.2f%% (%s/%s)\n"
             %(epoch_loss, epoch_acc, correct, total))
     return epoch_loss, epoch_acc
 

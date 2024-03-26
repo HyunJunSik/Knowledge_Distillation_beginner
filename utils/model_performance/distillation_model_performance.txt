@@ -1,0 +1,4 @@
+resnet8-Test | Loss:1.4931 Acc: 58.34% (5834/10000) DKD
+resnet8-Test | Loss:1.5333 Acc: 59.39% (5939/10000) KD
+Acc : 54.02%
+resnet8-Test | Loss:1.4110 Acc: 61.99% (6199/10000)
