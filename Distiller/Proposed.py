@@ -18,6 +18,13 @@ def GCKD_loss(logits_student, logits_teacher):
     
     t_student_norm = F.normalize(t_stu, p=2, dim=1)
     t_teacher_norm = F.normalize(t_tea, p=2, dim=1)
+
+    '''
+    def normalize(logit):
+    mean = logit.mean(dim=-1, keepdims=True)
+    stdv = logit.std(dim=-1, keepdims=True)
+    return (logit - mean) / (1e-7 + stdv) 이거 함 넣어보자..!
+    '''
     
     # Student's gram matrix
     student_gram = torch.mm(logits_student, t_student_norm)
